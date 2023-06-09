@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "name": "(Windows) Launch",
+            "request": "launch",
+            "program": "${workspaceRoot}/wasm/target/debug/wasm.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal"
+        }
+    ]
+}
+
+

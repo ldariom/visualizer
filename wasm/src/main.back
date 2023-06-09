@@ -1,0 +1,41 @@
+
+
+/* 
+use wasm::*; */
+
+/* use std::{fs::File, path::Path};
+
+
+fn main() { */
+  
+/* 
+let play_file = load_and_play_file();
+
+let sss: String = debug_log(); */
+
+/* let file = std::fs::File::open("ARRABAL.mp3").unwrap();
+println!("{:#?}", file); */
+
+/* let asd = getFile();
+
+let path = Path::new("ARRABAL.mp3");
+let display = path.display();
+
+let mut file = match File::open(&path) {
+    Err(why) => panic!("couldn't open {}: {}", display, why),
+    Ok(file) => file,
+};
+
+let mut s = String::new();
+match file.read_to_string(&mut s) {
+    Err(why) => panic!("couldn't read {}: {}", display, why),
+    Ok(_) => print!("{} contains:\n{}", display, s),
+}
+
+println!("{:#?}", asd);
+}
+
+fn getFile() -> std::io::Result<()> {
+    let mut f = File::open("./ARRABAL.mp3")?;
+    Ok(())
+} */
