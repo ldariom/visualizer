@@ -1,6 +1,5 @@
 import { HTMLTable } from "@blueprintjs/core";
 import React, { useState } from "react";
-import "@blueprintjs/table/lib/css/table.css";
 
 const trackList = [
   { name: "ARRABAL",  path: "audio/ARRABAL.mp3" },
