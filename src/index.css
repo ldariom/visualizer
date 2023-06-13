@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #FFF;
 }
 
 code {
@@ -12,20 +13,12 @@ code {
     monospace;
 }
 
-.bp3-table, 
-.bp3-dark .bp3-table-container, 
-.bp3-dark .bp3-table-column-headers, 
-.bp3-dark .bp3-table-quadrant, 
-.bp3-dark .bp3-table-menu, 
-.bp3-dark .bp3-table-cell-client,
-.bp3-dark .bp3-table-row-headers {
-  background-color: transparent !important;
-}
+table.bp4-html-table td {
+    color: #FFF !important;
+    cursor: pointer;
 
-.bp3-table-top-container .bp3-table-column-headers.bp3-table-selection-enabled{
-   /* display: none; */
+    &.selected {
+      border: solid 1px;
+    }
+ 
 }
-
- .bp3-table-container.bp3-table-selection-enabled:focus  {
-  outline:none !important
- }

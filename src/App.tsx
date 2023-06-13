@@ -1,7 +1,8 @@
-import { FileInput, FormGroup, H2, InputGroup, Slider } from "@blueprintjs/core";
+import { FormGroup, Slider } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import React, { useEffect, useState } from "react";
-import { Table2 } from "./components/Table2";
+import { Table2 } from "./components/Table";
+import init from "wasm";
 
 declare global {
   interface Window { bf: Uint8Array | {}; }
@@ -18,18 +19,12 @@ const fetchData = async (path: string) => {
   window.bf = rust_input_Uint8Array;
 };
 
-const runWasm = async () => {
-  // Instantiate our wasm module
-  return await import("./pkg");
-};
 
 const App: React.FC = () => {
   const [stepFactor, setStepFactor] = useState(160);
   const [colorStepFactor, setColorStepFactor] = useState(100);
   const [opacity, setOpacity] = useState(0.95);
   const [radius, setRadius] = useState(4);
-
-  const [example, setValueTest] = useState(1);
 
   const [pathSelected, setPathSelected] = useState("");
 
@@ -60,19 +55,18 @@ const App: React.FC = () => {
   }
 
   useEffect(() => {
-    if (pathSelected == null) {
-      return;
-    }
-    const t0 = performance.now();
-    fetchData(pathSelected).then(() => {
-      const t1 = performance.now();
-      runWasm().then((mod) => {
-        mod.run();
+    if (pathSelected !== null) {
+   
+      const t0 = performance.now();
+      fetchData(pathSelected).then(() => {
         const t1 = performance.now();
-        console.log(`playing song took ${t1 - t0} milliseconds.`);
+        init().then((mod) => {
+          mod.run();
+          const t1 = performance.now();
+          console.log(`playing song took ${t1 - t0} milliseconds.`);
+        });
       });
-    });
-    
+    }
   }, [pathSelected]);
 
   return (

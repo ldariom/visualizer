@@ -1,21 +1,32 @@
-import { Cell, Column, Table2 } from "@blueprintjs/table";
+import { HTMLTable } from "@blueprintjs/core";
+import React, { useState } from "react";
 import "@blueprintjs/table/lib/css/table.css";
-import React from "react";
-export const Table = () => {
 
-    const dollarCellRenderer = (rowIndex: number) => (
-        <Cell>{`$${(rowIndex * 10).toFixed(2)}`}</Cell>
-    );
-    const euroCellRenderer = (rowIndex: number) => (
-        <Cell>{`€${(rowIndex * 10 * 0.85).toFixed(2)}`}</Cell>
-    );
-    
+const trackList = [
+  { name: "ARRABAL",  path: "audio/ARRABAL.mp3" },
+  { name: "Present-perfect", path: "audio/Present-perfect.mp3" },
+  { name: "Guitar", path: "audio/smooth-ac-guitar-loop-93bpm-137706.mp3" }
+];
+
+export const Table2 = (props: any) => {
+  const [, setPathSelected] = useState('');
+  const [refSelected, setRefSelected] = useState(100);
+
+  const clickCell = (path: string, id: number) => {
+    setRefSelected(id);
+    setPathSelected(path);
+    props.onValueChange(path);
+  }
+
   return (
-    <div>
-    <Table2 numRows={10}>
-        <Column name="Dollars" cellRenderer={dollarCellRenderer}/>
-        <Column name="Euros" cellRenderer={euroCellRenderer} />
-    </Table2>
-    </div>
-  )
-}
+    <>
+      <HTMLTable bordered={true}>
+        <tbody>
+        {trackList.map((track: { name: string; path: string}, index) => {     
+           return (<tr key={ index }><td className={ index == refSelected ? 'selected' : ''} onClick={ () => clickCell(track.path, index) }> { track.name }</td></tr>) 
+        })}
+        </tbody>
+    </HTMLTable>
+    </>
+  );
+};

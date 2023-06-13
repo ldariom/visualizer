@@ -74,27 +74,31 @@ async fn load_and_play_file() -> Result<web_sys::AnalyserNode, JsValue> {
     let window = web_sys::window().unwrap();
     let audio_data = js_sys::Reflect::get(&window, &"bf".into());
 
-    let array_buffer_data = uint8array_to_arraybuffer(audio_data.unwrap().into());
-
     let audio_context = get_audio_context(); 
 
-    let dec: js_sys::Promise = audio_context.decode_audio_data(&array_buffer_data)
-    .unwrap_or_else(|err| err.into());
-
-    let buf: web_sys::AudioBuffer = wasm_bindgen_futures::JsFuture::from(dec).await?.dyn_into().unwrap();
-
-    let source = audio_context.create_buffer_source().unwrap();
-
-    source.set_buffer(Some(&buf));
-
     let analyser = audio_context.create_analyser()?;
-    analyser.set_fft_size(2048);
 
-    source.connect_with_audio_node(&analyser)?;
-    analyser.connect_with_audio_node(&audio_context.destination())?;
+    if frame_id != 0 { 
+        
+        let array_buffer_data = uint8array_to_arraybuffer(audio_data.unwrap().into());
 
-    source.start()?;
+        let dec: js_sys::Promise = audio_context.decode_audio_data(&array_buffer_data)
+        .unwrap_or_else(|err| err.into());
 
+        let buf: web_sys::AudioBuffer = wasm_bindgen_futures::JsFuture::from(dec).await?.dyn_into().unwrap();
+
+        let source = audio_context.create_buffer_source().unwrap();
+
+        source.set_buffer(Some(&buf));
+
+        analyser.set_fft_size(2048);
+
+        source.connect_with_audio_node(&analyser)?;
+        analyser.connect_with_audio_node(&audio_context.destination())?;
+
+        source.start()?;
+    }
+    
     Ok(analyser)
 }
 
