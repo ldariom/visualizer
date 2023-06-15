@@ -13,6 +13,23 @@ code {
     monospace;
 }
 
+table.bp4-html-table {
+  overflow:hidden;
+  height:100px;
+}
+
+tbody {
+  overflow-y:scroll;
+  height:200px;
+  width:100%;
+  position:absolute;
+  right:-30px;
+}
+
+tbody::-webkit-scrollbar {
+  display: none;
+}
+
 table.bp4-html-table td {
     color: #FFF !important;
     cursor: pointer;
@@ -20,5 +37,8 @@ table.bp4-html-table td {
     &.selected {
       border: solid 1px;
     }
- 
+}
+
+.bp4-file-upload-input {
+  background: none;
 }

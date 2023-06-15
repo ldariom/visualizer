@@ -178,6 +178,81 @@ impl Visualizer {
             self.ctx.fill();
         }
     }
+
+    fn draw_bars(&self) {
+
+        let step_factor = window().get("stepFactor").unwrap().as_f64().unwrap();
+        let color_step_factor = window().get("colorStepFactor").unwrap().as_f64().unwrap();
+        let opacity = window().get("opacity").unwrap().as_f64().unwrap();
+        let radius = window().get("radius").unwrap().as_f64().unwrap();
+
+        // save last frame to offscreen canvas with step_factor trimmed off
+        self.tmp_ctx
+            .draw_image_with_html_canvas_element_and_sw_and_sh_and_dx_and_dy_and_dw_and_dh(
+                &self.canvas,
+                self.width as f64 / step_factor,
+                self.height as f64 / step_factor,
+                self.width as f64 * step_factor,
+                self.height as f64 * step_factor,
+                self.width as f64,
+                self.height as f64,
+                self.width as f64,
+                self.height as f64,
+            )
+            .unwrap();
+        
+            // clear canvas
+            self.ctx.set_fill_style(&"rgb(0, 0, 0)".into());
+            self.ctx
+                .fill_rect(0., 0., f64::from(self.width), f64::from(self.height));
+
+            // draw old frame with opacity
+            self.ctx.set_global_alpha(opacity);
+            self.ctx
+                .draw_image_with_html_canvas_element(&self.tmp_canvas, 0., 0.)
+                .unwrap();
+            self.ctx.set_global_alpha(1.);
+
+            let steps = 100;
+            let ang_step = std::f64::consts::PI * 2.0 / steps as f64;
+            let start_angle = -std::f64::consts::PI / 2.0; 
+
+            let center_x = self.width as f64 / 2.0;
+            let center_y = self.height as f64 / 2.0;
+            
+            let inner_radius = f64::min(self.width as f64, self.height as f64) / 2.0 * (3.0 / 4.0);
+            let bar_width = inner_radius * std::f64::consts::PI * 2.0 / steps as f64 * 0.9;
+
+            let bar_width_half = bar_width * 0.5;
+
+            self.ctx.fill_rect(0.0, 0.0, self.width as f64, self.height as f64 );
+
+            let color = |h: f64| -> String{
+                format!("rgb({}, {}, {})", 
+                (h as f64 / color_step_factor ).sin() * 127.5 + 127.5, 
+                (h as f64 / color_step_factor).sin() * 127.5 + 127.5, 
+                (h as f64 / color_step_factor ).sin() * 127.5 + 127.5
+            )};
+
+            for i in 0..2048 {
+
+                let amp = f64::from(self.buf[i]) / 256.0;
+
+                let r = amp * self.height as f64 * 0.2 + self.height as f64 * 0.09;
+
+                let h = self.buf[i];
+                let ang = i as f64 * ang_step + start_angle;
+                let x_ax = ang.cos();
+                let x_ay = ang.sin();
+                self.ctx.set_transform(x_ax, x_ay, -x_ay, x_ax, center_x, center_y).unwrap_or_else(|_| ());
+                self.ctx.set_fill_style(&JsValue::from_str(&color(i as f64)));
+                self.ctx.fill_rect(r * radius  * 0.08, -bar_width_half, h as f64, step_factor * 0.04);
+            }
+
+            self.ctx.set_transform(1.0,0.0,0.0,1.0,0.0,0.0).unwrap_or_else(|_| ());
+
+
+    }
 }
 
 #[wasm_bindgen]
@@ -234,8 +309,14 @@ pub async fn run() -> Result<(), JsValue> {
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
         i += 1;
         analyser.get_byte_time_domain_data(&mut vis.buf);
-        vis.draw(i);
 
+        let opacity = window().get("opacity").unwrap().as_f64().unwrap();
+
+        if opacity > 0.5 {
+            vis.draw(i);
+        } else {
+            vis.draw_bars();
+        }
         // Schedule ourself for another requestAnimationFrame callback.
         request_animation_frame(f.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));

@@ -1,4 +1,4 @@
-import { FormGroup, Slider } from "@blueprintjs/core";
+import { FileInput, FormGroup, Slider } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import React, { useEffect, useState } from "react";
 import { Table2 } from "./components/Table";
@@ -19,16 +19,14 @@ const fetchData = async (path: string) => {
   window.bf = rust_input_Uint8Array;
 };
 
-
 const App: React.FC = () => {
+  const [file, setFile] = useState<File>();
+  const [stateUpload, setResponseUpload] = useState<{ message: string; list?: Array<string>; flag: boolean } | null>(null);
   const [stepFactor, setStepFactor] = useState(160);
   const [colorStepFactor, setColorStepFactor] = useState(100);
   const [opacity, setOpacity] = useState(0.95);
   const [radius, setRadius] = useState(4);
-
   const [pathSelected, setPathSelected] = useState("");
-
-  console.log(pathSelected);
 
   useEffect(() => {
     // @ts-ignore
@@ -50,9 +48,25 @@ const App: React.FC = () => {
     window.colorStepFactor = 199 - colorStepFactor;
   }, [colorStepFactor]);
 
-  const pathSelectedChange = (newValue: any) => {
-    setPathSelected(newValue);
-  }
+  useEffect(() => {
+    if (file == null) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('http://localhost:5000/upload', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then( setResponseUpload )
+    .catch(err => console.error(err));
+
+  }, [file]);
+  
+  console.log(stateUpload);
 
   useEffect(() => {
     if (pathSelected !== null) {
@@ -146,9 +160,20 @@ const App: React.FC = () => {
           />
         </FormGroup>
 
+        <h3>Upload audio file</h3>
+        <FileInput
+          style={{ width: "250px" }}
+          inputProps={{ accept: "audio/*", id: "file-input" }}
+          onChange={(e) => {
+            // @ts-ignore
+            const file = e.target.files[0];
+            setFile(file);
+          }}
+        />
+
         <h3 style={{ marginTop: "30px" }}>Select tracks</h3>
 
-        <Table2 onValueChange={ pathSelectedChange }></Table2>
+        <Table2 soundList={stateUpload} onValueChange={ setPathSelected }></Table2>
 
       </div>
 
