@@ -33,7 +33,7 @@ const wasmPlugin = {
     }
   },
 };
-
+// https://stackoverflow.com/questions/46876570/create-react-app-exclude-folder-from-triggering-reload
 module.exports = function ({ env }) {
   return {
     plugins: [wasmPlugin],

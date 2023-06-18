@@ -65,8 +65,6 @@ const App: React.FC = () => {
     .catch(err => console.error(err));
 
   }, [file]);
-  
-  console.log(stateUpload);
 
   useEffect(() => {
     if (pathSelected !== null) {
